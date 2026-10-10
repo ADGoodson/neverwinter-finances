@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeverWinter BoD Financial Analysis</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
+        }
+
+        h1 {
+            font-size: 42px;
+            margin-bottom: 10px;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 18px;
+            opacity: 0.95;
+            margin-bottom: 10px;
+        }
+
+        .description {
+            font-size: 16px;
+            opacity: 0.85;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .dashboards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .dashboard-card {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-align: center;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .dashboard-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .dashboard-card h2 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .dashboard-card p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.7;
+            margin-bottom: 25px;
+        }
+
+        .dashboard-link {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            padding: 14px 40px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .dashboard-link:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 25px rgba(102, 126, 234, 0.6);
+        }
+
+        footer {
+            text-align: center;
+            color: white;
+            margin-top: 80px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            opacity: 0.8;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 32px;
+            }
+
+            .subtitle {
+                font-size: 16px;
+            }
+
+            .dashboards {
+                gap: 20px;
+            }
+
+            .dashboard-card {
+                padding: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚔️ NeverWinter BoD</h1>
+            <p class="subtitle">Financial Analysis Dashboard</p>
+            <p class="description">
+                Comprehensive treasury analysis and financial reporting for the Amtgard Kingdom of NeverWinter
+            </p>
+        </header>
+
+        <div class="dashboards">
+            <div class="dashboard-card">
+                <div class="dashboard-icon">🚨</div>
+                <h2>Financial Crisis Dashboard</h2>
+                <p>Current treasury status, over-leveraging analysis, operational runway, and the impact of lower ticket prices on kingdom sustainability.</p>
+                <a href="neverwiniter_financial_dashboard.html" class="dashboard-link">View Dashboard →</a>
+            </div>
+
+            <div class="dashboard-card">
+                <div class="dashboard-icon">📊</div>
+                <h2>Yearly & 4-Year Analysis</h2>
+                <p>Year-by-year financial summary from 2022-2026, historical trends, revenue comparison, and key findings across four years.</p>
+                <a href="neverwiniter_yearly_analysis.html" class="dashboard-link">View Dashboard →</a>
+            </div>
+        </div>
+
+        <footer>
+            <p>NeverWinter BoD Financial Analysis | Data from May 2022 - September 2026</p>
+            <p style="margin-top: 10px;">For Board Members & Kingdom Leadership</p>
+        </footer>
+    </div>
+</body>
+</html>
