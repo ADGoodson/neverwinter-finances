@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeverWinter BoD Financial Dashboard - Critical Analysis</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <style>
+        :root {
+            --primary-text: #1a1a1a;
+            --secondary-text: #666;
+            --danger: #d32f2f;
+            --warning: #f57c00;
+            --success: #388e3c;
+            --info: #1976d2;
+            --surface: #f5f5f5;
+            --border: #e0e0e0;
+            --critical-red: #c41c3b;
+            --over-leveraged: #d32f2f;
+            --warning-orange: #ff9800;
+            --operational: #4caf50;
+            --encumbered-1: #b71c1c;
+            --encumbered-2: #e64980;
+            --encumbered-3: #7e57c2;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --primary-text: #ffffff;
+                --secondary-text: #b0b0b0;
+                --surface: #1e1e1e;
+                --border: #404040;
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f9f9f9;
+            color: var(--primary-text);
+            line-height: 1.6;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: #121212;
+            }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 3px solid var(--critical-red);
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 28px;
+            color: var(--critical-red);
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: var(--secondary-text);
+        }
+
+        .alert-banner {
+            background: var(--critical-red);
+            color: white;
+            padding: 16px;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .card {
+                background: #2a2a2a;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            }
+        }
+
+        .card h2 {
+            font-size: 18px;
+            margin-bottom: 16px;
+            color: var(--primary-text);
+        }
+
+        .stat-box {
+            padding: 20px;
+            background: var(--surface);
+            border-radius: 4px;
+            margin-bottom: 12px;
+            border-left: 4px solid var(--info);
+        }
+
+        .stat-box.critical {
+            border-left-color: var(--danger);
+            background: rgba(211, 47, 47, 0.05);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--secondary-text);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--primary-text);
+        }
+
+        .stat-box.critical .stat-value {
+            color: var(--danger);
+        }
+
+        .percentage {
+            font-size: 14px;
+            color: var(--secondary-text);
+            margin-top: 4px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 16px;
+        }
+
+        .breakdown-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .breakdown-table th {
+            text-align: left;
+            padding: 8px;
+            border-bottom: 2px solid var(--border);
+            color: var(--secondary-text);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 12px;
+        }
+
+        .breakdown-table td {
+            padding: 12px 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breakdown-table tr:hover {
+            background: var(--surface);
+        }
+
+        .amount {
+            text-align: right;
+            font-weight: 500;
+            color: var(--primary-text);
+        }
+
+        .percentage-col {
+            text-align: right;
+            color: var(--secondary-text);
+        }
+
+        .bar-visual {
+            height: 24px;
+            background: linear-gradient(90deg, var(--encumbered-1) 0%, var(--encumbered-2) 50%, var(--encumbered-3) 100%);
+            border-radius: 2px;
+            margin: 8px 0;
+        }
+
+        .scenario-buttons {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            background: white;
+            color: var(--primary-text);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            button {
+                background: #3a3a3a;
+            }
+        }
+
+        button:hover {
+            background: var(--surface);
+            border-color: var(--info);
+        }
+
+        button.active {
+            background: var(--info);
+            color: white;
+            border-color: var(--info);
+        }
+
+        .impact-section {
+            background: rgba(211, 47, 47, 0.05);
+            border-left: 4px solid var(--danger);
+            padding: 16px;
+            border-radius: 4px;
+            margin-top: 16px;
+        }
+
+        .impact-section h3 {
+            color: var(--danger);
+            font-size: 14px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .impact-items {
+            list-style: none;
+            font-size: 13px;
+        }
+
+        .impact-items li {
+            margin-bottom: 8px;
+            padding-left: 24px;
+            position: relative;
+            color: var(--secondary-text);
+        }
+
+        .impact-items li:before {
+            content: "⚠";
+            position: absolute;
+            left: 0;
+            color: var(--danger);
+        }
+
+        .key-insight {
+            background: linear-gradient(135deg, rgba(25, 118, 210, 0.05), rgba(25, 118, 210, 0.02));
+            border-left: 4px solid var(--info);
+            padding: 16px;
+            border-radius: 4px;
+            margin-top: 16px;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .key-insight strong {
+            color: var(--info);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: var(--secondary-text);
+            font-size: 12px;
+            border-top: 1px solid var(--border);
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .risk-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+
+        .risk-indicator.critical {
+            background: var(--danger);
+        }
+
+        .risk-indicator.warning {
+            background: var(--warning);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚠️ NeverWinter Financial Crisis Dashboard</h1>
+            <p class="subtitle">Board Presentation - October 2026</p>
+        </header>
+
+        <div class="alert-banner">
+            83.5% of treasury funds are already encumbered for future events. Only $3,231 available for operations.
+        </div>
+
+        <div class="grid">
+            <!-- Current State -->
+            <div class="card">
+                <h2>Current Treasury Status (Sept 24, 2026)</h2>
+
+                <div class="stat-box critical">
+                    <div class="stat-label">Total Available Funds</div>
+                    <div class="stat-value">$19,612</div>
+                </div>
+
+                <div class="stat-box critical">
+                    <div class="stat-label">Operational Funds (Unencumbered)</div>
+                    <div class="stat-value">$3,231</div>
+                    <div class="percentage">Only 16.5% of total treasury</div>
+                </div>
+
+                <div class="stat-box">
+                    <div class="stat-label">Encumbered Funds</div>
+                    <div class="stat-value">$16,400</div>
+                    <div class="percentage">83.5% committed to future events</div>
+                </div>
+
+                <div class="bar-visual"></div>
+                <p style="font-size: 12px; color: var(--secondary-text);">⬅ Encumbered | Operational ➡</p>
+            </div>
+
+            <!-- Encumbered Breakdown -->
+            <div class="card">
+                <h2>What's Encumbered?</h2>
+
+                <table class="breakdown-table">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th class="amount">Amount</th>
+                            <th class="percentage-col">% of Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Crown Crucible Event</td>
+                            <td class="amount">$4,000</td>
+                            <td class="percentage-col">20.4%</td>
+                        </tr>
+                        <tr>
+                            <td>November Event (3 months)</td>
+                            <td class="amount">$6,200</td>
+                            <td class="percentage-col">31.6%</td>
+                        </tr>
+                        <tr>
+                            <td>February Event (5 months)</td>
+                            <td class="amount">$6,200</td>
+                            <td class="percentage-col">31.6%</td>
+                        </tr>
+                        <tr style="font-weight: bold; background: var(--surface);">
+                            <td>TOTAL ENCUMBERED</td>
+                            <td class="amount">$16,400</td>
+                            <td class="percentage-col">83.5%</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="key-insight">
+                    <strong>🔴 Critical Issue:</strong> If any major event doesn't hit funding goals, we cannot fulfill our commitments to other events or pay basic operational costs.
+                </div>
+            </div>
+        </div>
+
+        <!-- Operational Runway -->
+        <div class="card full-width">
+            <h2>Operational Runway Analysis</h2>
+            <p style="margin-bottom: 16px; color: var(--secondary-text);">With only $3,231 in unencumbered funds, here's how long we can sustain operations:</p>
+
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+                <div style="padding: 16px; background: var(--surface); border-radius: 4px; border-left: 4px solid var(--danger);">
+                    <div class="stat-label">Low Activity (Minimal spend)</div>
+                    <div style="font-size: 24px; font-weight: bold; color: var(--danger);">~3 months</div>
+                    <div style="font-size: 12px; color: var(--secondary-text); margin-top: 4px;">~$1,000/month for storage, subscriptions, admin</div>
+                </div>
+
+                <div style="padding: 16px; background: var(--surface); border-radius: 4px; border-left: 4px solid var(--warning);">
+                    <div class="stat-label">Medium Activity</div>
+                    <div style="font-size: 24px; font-weight: bold; color: var(--warning);">~1-2 months</div>
+                    <div style="font-size: 12px; color: var(--secondary-text); margin-top: 4px;">With active day battles (~$1,500-2,000/month)</div>
+                </div>
+
+                <div style="padding: 16px; background: var(--surface); border-radius: 4px; border-left: 4px solid var(--danger);">
+                    <div class="stat-label">Emergency Scenario</div>
+                    <div style="font-size: 24px; font-weight: bold; color: var(--danger);">0 months</div>
+                    <div style="font-size: 12px; color: var(--secondary-text); margin-top: 4px;">If we must refund tickets or cover cost overruns</div>
+                </div>
+            </div>
+
+            <div class="impact-section" style="margin-top: 20px;">
+                <h3>⚠️ Operational Risks</h3>
+                <ul class="impact-items">
+                    <li>Cannot absorb cost overruns on any event</li>
+                    <li>No buffer for emergency repairs (tents, equipment, facilities)</li>
+                    <li>Cannot pay new/unexpected expenses (licensing, insurance, permits)</li>
+                    <li>Zero contingency for participant refunds if events are cancelled</li>
+                    <li>Entire kingdom dependent on flawless fundraising execution</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Scenario Analysis -->
+        <div class="card full-width">
+            <h2>Impact Analysis: Lower Ticket Prices</h2>
+            <p style="margin-bottom: 20px; color: var(--secondary-text);">Scenario: Current ticket prices generate estimated revenue. What happens with a 15% ticket price reduction?</p>
+
+            <div class="scenario-buttons">
+                <button class="active" onclick="showScenario('current')">Current Prices</button>
+                <button onclick="showScenario('reduced')">15% Price Cut</button>
+                <button onclick="showScenario('worst')">Worst Case (30% Cut)</button>
+            </div>
+
+            <div id="scenario-chart" style="position: relative; height: 350px; margin-bottom: 20px;">
+                <canvas id="scenarioCanvas"></canvas>
+            </div>
+
+            <div class="impact-section" id="impact-current" style="display: block;">
+                <h3>Current Price Model</h3>
+                <ul class="impact-items">
+                    <li><strong>Estimated quarterly revenue:</strong> $4,500 per event</li>
+                    <li><strong>Allows encumbered events to proceed:</strong> Crown Crucible, November, February events funded</li>
+                    <li><strong>Unencumbered buffer:</strong> $3,231 (tight, but functional)</li>
+                    <li><strong>Risk level:</strong> <span class="risk-indicator critical"></span> CRITICAL - Any shortfall cascades</li>
+                </ul>
+            </div>
+
+            <div class="impact-section" id="impact-reduced" style="display: none;">
+                <h3>With 15% Price Reduction (~$675 per event loss)</h3>
+                <ul class="impact-items">
+                    <li><strong>Estimated quarterly revenue:</strong> $3,825 per event (22% decline)</li>
+                    <li><strong>Shortfall per event:</strong> -$675 vs. budget</li>
+                    <li><strong>Impact over 3 events:</strong> -$2,025 cumulative</li>
+                    <li><strong>Result:</strong> Events underfunded; operational buffer completely eliminated</li>
+                    <li><strong>Risk level:</strong> <span class="risk-indicator critical"></span> CATASTROPHIC - Kingdom cannot function</li>
+                </ul>
+            </div>
+
+            <div class="impact-section" id="impact-worst" style="display: none;">
+                <h3>Worst Case: 30% Price Reduction (~$1,350 per event loss)</h3>
+                <ul class="impact-items">
+                    <li><strong>Estimated quarterly revenue:</strong> $3,150 per event (43% decline)</li>
+                    <li><strong>Shortfall per event:</strong> -$1,350 vs. budget</li>
+                    <li><strong>Impact over 3 events:</strong> -$4,050 cumulative</li>
+                    <li><strong>Result:</strong> UNABLE to fund encumbered events; deficit spending required</li>
+                    <li><strong>Options:</strong> Cancel events, take loans, or draw from reserves we don't have</li>
+                    <li><strong>Risk level:</strong> <span class="risk-indicator critical"></span> KINGDOM COLLAPSE</li>
+                </ul>
+            </div>
+
+            <div class="key-insight" style="margin-top: 20px;">
+                <strong>📊 Board Decision Point:</strong> A small minority requesting lower ticket prices does not understand that our current prices are <em>not optional—they are the minimum required to sustain the kingdom</em>. We are not running a discount operation; we are running a break-even nonprofit. Lower prices = insolvency.
+            </div>
+        </div>
+
+        <!-- Historical Trend -->
+        <div class="card full-width">
+            <h2>Cash Position Trend (2024-2026)</h2>
+            <div class="chart-container">
+                <canvas id="trendCanvas"></canvas>
+            </div>
+            <p style="font-size: 12px; color: var(--secondary-text); margin-top: 12px;">Notice: Growth halted in 2025 as encumbered commitments accumulated. Current position shows we've stopped accumulating reserves.</p>
+        </div>
+
+        <!-- Recommendations -->
+        <div class="card full-width">
+            <h2>Board Recommendations</h2>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px;">
+                <div style="padding: 16px; background: var(--surface); border-radius: 4px; border-left: 4px solid var(--danger);">
+                    <h3 style="color: var(--danger); margin-bottom: 8px;">❌ DO NOT</h3>
+                    <ul style="list-style: none; font-size: 13px;">
+                        <li>✗ Reduce ticket prices below current levels</li>
+                        <li>✗ Increase event frequency without increased funding</li>
+                        <li>✗ Add new encumbered commitments</li>
+                        <li>✗ Spend unencumbered reserves on discretionary items</li>
+                    </ul>
+                </div>
+
+                <div style="padding: 16px; background: var(--surface); border-radius: 4px; border-left: 4px solid var(--warning);">
+                    <h3 style="color: var(--warning); margin-bottom: 8px;">⚠️ MUST DO</h3>
+                    <ul style="list-style: none; font-size: 13px;">
+                        <li>✓ Hit funding targets on every event (no shortfalls)</li>
+                        <li>✓ Build operational reserve to $5,000+ minimum</li>
+                        <li>✓ Implement spending caps & contingency budgets</li>
+                        <li>✓ Monthly financial reporting to Board</li>
+                    </ul>
+                </div>
+
+                <div style="padding: 16px; background: var(--surface); border-radius: 4px; border-left: 4px solid var(--success);">
+                    <h3 style="color: var(--success); margin-bottom: 8px;">✅ SHOULD DO</h3>
+                    <ul style="list-style: none; font-size: 13px;">
+                        <li>✓ Increase ticket prices 5-10% to build buffer</li>
+                        <li>✓ Diversify revenue (sponsorships, merchandise)</li>
+                        <li>✓ Reduce encumbered event size/cost</li>
+                        <li>✓ Create 6-month cash forecast model</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>NeverWinter BoD Financial Analysis | October 2026</p>
+            <p>Data based on treasury records from May 2022 - September 2026</p>
+        </footer>
+    </div>
+
+    <script>
+        // Scenario Analysis Chart
+        const scenarioCtx = document.getElementById('scenarioCanvas');
+        let scenarioChart = null;
+
+        function initScenarioChart() {
+            const scenarios = {
+                'current': {
+                    label: 'Current Pricing',
+                    revenue: [4500, 4500, 4500],
+                    costs: [3000, 3000, 3000],
+                    color: '#4caf50'
+                },
+                'reduced': {
+                    label: '15% Price Cut',
+                    revenue: [3825, 3825, 3825],
+                    costs: [3000, 3000, 3000],
+                    color: '#ff9800'
+                },
+                'worst': {
+                    label: '30% Price Cut',
+                    revenue: [3150, 3150, 3150],
+                    costs: [3000, 3000, 3000],
+                    color: '#d32f2f'
+                }
+            };
+
+            if (scenarioChart) {
+                scenarioChart.destroy();
+            }
+
+            const current = scenarios.current;
+            const datasets = [
+                {
+                    label: 'Event Revenue',
+                    data: current.revenue,
+                    backgroundColor: 'rgba(76, 175, 80, 0.7)',
+                    borderColor: '#4caf50',
+                    borderWidth: 2,
+                    borderRadius: 4,
+                    barPercentage: 0.7
+                },
+                {
+                    label: 'Event Costs',
+                    data: current.costs,
+                    backgroundColor: 'rgba(244, 67, 54, 0.7)',
+                    borderColor: '#f44336',
+                    borderWidth: 2,
+                    borderRadius: 4,
+                    barPercentage: 0.7
+                }
+            ];
+
+            scenarioChart = new Chart(scenarioCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Event 1', 'Event 2', 'Event 3'],
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 15,
+                                font: { size: 13 }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 5000,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function showScenario(scenario) {
+            // Update buttons
+            document.querySelectorAll('.scenario-buttons button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Hide all impact sections
+            document.getElementById('impact-current').style.display = 'none';
+            document.getElementById('impact-reduced').style.display = 'none';
+            document.getElementById('impact-worst').style.display = 'none';
+
+            // Show selected impact section
+            if (scenario === 'current') {
+                document.getElementById('impact-current').style.display = 'block';
+            } else if (scenario === 'reduced') {
+                document.getElementById('impact-reduced').style.display = 'block';
+            } else {
+                document.getElementById('impact-worst').style.display = 'block';
+            }
+        }
+
+        // Historical Trend Chart
+        const trendCtx = document.getElementById('trendCanvas');
+        const trendChart = new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: ['Aug 2024', 'Nov 2024', 'Dec 2024', 'Jan 2025', 'Feb 2025', 'Mar 2025', 'Apr 2025', 'May 2025', 'Jun 2025', 'Jul 2025', 'Aug 2025', 'Sep 2025', 'Oct 2025', 'Nov 2025', 'Dec 2025', 'Jun 2026', 'Jul 2026', 'Sep 2026'],
+                datasets: [
+                    {
+                        label: 'Total Treasury Balance',
+                        data: [13661, 15146, 16344, 15724, 19030, 18425, 17706, 19406, 18791, 19033, 22454, 18791, 19474, 19635, 21837, 18791, 15775, 19612],
+                        borderColor: '#1976d2',
+                        backgroundColor: 'rgba(25, 118, 210, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 5,
+                        pointBackgroundColor: '#1976d2',
+                        pointBorderWidth: 0
+                    },
+                    {
+                        label: 'Unencumbered (Operational)',
+                        data: [5661, 9146, 10344, 9830, 12586, 12364, 13206, 14906, 14291, 14533, 17954, 16261, 16944, 14635, 16837, 18791, 15775, 3231],
+                        borderColor: '#4caf50',
+                        backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        borderDash: [5, 5],
+                        pointRadius: 4,
+                        pointBackgroundColor: '#4caf50',
+                        pointBorderWidth: 0
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 15,
+                            font: { size: 13 }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + value.toLocaleString();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Initialize
+        initScenarioChart();
+    </script>
+</body>
+</html>
