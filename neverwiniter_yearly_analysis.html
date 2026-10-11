@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeverWinter BoD Yearly Financial Analysis 2022-2026</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <style>
+        :root {
+            --primary-text: #1a1a1a;
+            --secondary-text: #666;
+            --accent-1: #1976d2;
+            --accent-2: #388e3c;
+            --accent-3: #f57c00;
+            --accent-4: #c41c3b;
+            --accent-5: #7b1fa2;
+            --surface: #f5f5f5;
+            --border: #e0e0e0;
+            --positive: #388e3c;
+            --negative: #d32f2f;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --primary-text: #ffffff;
+                --secondary-text: #b0b0b0;
+                --surface: #1e1e1e;
+                --border: #404040;
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f9f9f9;
+            color: var(--primary-text);
+            line-height: 1.6;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: #121212;
+            }
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 2px solid var(--accent-1);
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: var(--secondary-text);
+        }
+
+        h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: var(--primary-text);
+            border-bottom: 2px solid var(--surface);
+            padding-bottom: 10px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+
+        .year-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-top: 4px solid var(--accent-1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .year-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .year-card.year-2022 { border-top-color: var(--accent-1); }
+        .year-card.year-2023 { border-top-color: var(--accent-2); }
+        .year-card.year-2024 { border-top-color: var(--accent-3); }
+        .year-card.year-2025 { border-top-color: var(--accent-4); }
+        .year-card.year-2026 { border-top-color: var(--accent-5); }
+
+        @media (prefers-color-scheme: dark) {
+            .year-card {
+                background: #2a2a2a;
+            }
+        }
+
+        .year-header {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .metric {
+            margin-bottom: 12px;
+        }
+
+        .metric-label {
+            font-size: 12px;
+            color: var(--secondary-text);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .metric-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--primary-text);
+        }
+
+        .metric.positive .metric-value {
+            color: var(--positive);
+        }
+
+        .metric.negative .metric-value {
+            color: var(--negative);
+        }
+
+        .trend-arrow {
+            display: inline-block;
+            margin-left: 8px;
+            font-size: 14px;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .chart-container {
+                background: #2a2a2a;
+            }
+        }
+
+        .chart-inner {
+            position: relative;
+            height: 350px;
+            margin-bottom: 16px;
+        }
+
+        .chart-inner.tall {
+            height: 400px;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+
+        .stat-block {
+            background: var(--surface);
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-1);
+        }
+
+        .stat-block h3 {
+            font-size: 14px;
+            color: var(--secondary-text);
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .stat-rows {
+            list-style: none;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+
+        .stat-row-label {
+            font-size: 13px;
+            flex: 1;
+        }
+
+        .stat-row-value {
+            font-size: 14px;
+            font-weight: 600;
+            text-align: right;
+            min-width: 120px;
+        }
+
+        .insights {
+            background: linear-gradient(135deg, rgba(25, 118, 210, 0.05), rgba(25, 118, 210, 0.02));
+            border-left: 4px solid var(--accent-1);
+            padding: 16px;
+            border-radius: 4px;
+            margin-top: 20px;
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .insights strong {
+            color: var(--accent-1);
+        }
+
+        .key-findings {
+            background: white;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .key-findings {
+                background: #2a2a2a;
+            }
+        }
+
+        .findings-list {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+        }
+
+        .finding-item {
+            padding: 16px;
+            background: var(--surface);
+            border-radius: 4px;
+            border-left: 4px solid var(--accent-1);
+        }
+
+        .finding-item.critical {
+            border-left-color: var(--negative);
+            background: rgba(211, 47, 47, 0.05);
+        }
+
+        .finding-item.positive {
+            border-left-color: var(--positive);
+            background: rgba(56, 142, 60, 0.05);
+        }
+
+        .finding-year {
+            font-size: 12px;
+            color: var(--secondary-text);
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .finding-text {
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: var(--secondary-text);
+            font-size: 12px;
+            border-top: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin-top: 16px;
+        }
+
+        th {
+            text-align: left;
+            padding: 10px;
+            background: var(--surface);
+            border-bottom: 2px solid var(--border);
+            font-weight: 600;
+            color: var(--secondary-text);
+            text-transform: uppercase;
+            font-size: 11px;
+        }
+
+        td {
+            padding: 12px 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:hover {
+            background: var(--surface);
+        }
+
+        .amount {
+            text-align: right;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>NeverWinter BoD Financial Analysis</h1>
+            <p class="subtitle">Yearly Summary & 4-Year Trends (2022-2026)</p>
+        </header>
+
+        <!-- Year-by-Year Summary Cards -->
+        <h2>Year-by-Year Treasury Summary</h2>
+        <div class="grid">
+            <div class="year-card year-2022">
+                <div class="year-header">2022</div>
+                <div class="metric">
+                    <div class="metric-label">Beginning Balance</div>
+                    <div class="metric-value">$9,191</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Total Expenses</div>
+                    <div class="metric-value">$0</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Total Deposits</div>
+                    <div class="metric-value">$1,144</div>
+                </div>
+                <div class="metric positive">
+                    <div class="metric-label">Ending Balance</div>
+                    <div class="metric-value">$10,335</div>
+                </div>
+                <div class="metric positive">
+                    <div class="metric-label">Net Change</div>
+                    <div class="metric-value">+$1,144 <span class="trend-arrow">📈</span></div>
+                </div>
+            </div>
+
+            <div class="year-card year-2023">
+                <div class="year-header">2023</div>
+                <div class="metric">
+                    <div class="metric-label">Beginning Balance</div>
+                    <div class="metric-value">$10,335</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Total Expenses</div>
+                    <div class="metric-value">$0</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Total Deposits</div>
+                    <div class="metric-value">$3,143</div>
+                </div>
+                <div class="metric negative">
+                    <div class="metric-label">Ending Balance</div>
+                    <div class="metric-value">$12,268</div>
+                </div>
+                <div class="metric positive">
+                    <div class="metric-label">Net Change</div>
+                    <div class="metric-value">+$1,933 <span class="trend-arrow">📈</span></div>
+                </div>
+                <div class="insights" style="margin-top: 12px;">
+                    <strong>Note:</strong> Limited reporting; balance decline in Dec not fully documented
+                </div>
+            </div>
+
+            <div class="year-card year-2024">
+                <div class="year-header">2024</div>
+                <div class="metric">
+                    <div class="metric-label">Beginning Balance</div>
+                    <div class="metric-value">$10,409</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Total Expenses</div>
+                    <div class="metric-value">$1,053</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Total Deposits</div>
+                    <div class="metric-value">$6,977</div>
+                </div>
+                <div class="metric positive">
+                    <div class="metric-label">Ending Balance</div>
+                    <div class="metric-value">$16,344</div>
+                </div>
+                <div class="metric positive">
+                    <div class="metric-label">Net Change</div>
+                    <div class="metric-value">+$5,935 <span class="trend-arrow">📈</span></div>
+                </div>
+            </div>
+
+            <div class="year-card year-2025">
+                <div class="year-header">2025</div>
+                <div class="metric">
+                    <div class="metric-label">Beginning Balance</div>
+                    <div class="metric-value">$16,344</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Total Expenses</div>
+                    <div class="metric-value">$20,245</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Total Deposits</div>
+                    <div class="metric-value">$25,738</div>
+                </div>
+                <div class="metric positive">
+                    <div class="metric-label">Ending Balance</div>
+                    <div class="metric-value">$21,837</div>
+                </div>
+                <div class="metric positive">
+                    <div class="metric-label">Net Change</div>
+                    <div class="metric-value">+$5,493 <span class="trend-arrow">📈</span></div>
+                </div>
+            </div>
+
+            <div class="year-card year-2026">
+                <div class="year-header">2026 (YTD)</div>
+                <div class="metric">
+                    <div class="metric-label">Beginning Balance</div>
+                    <div class="metric-value">$21,837</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Total Expenses</div>
+                    <div class="metric-value">$8,082</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Total Deposits</div>
+                    <div class="metric-value">$4,470</div>
+                </div>
+                <div class="metric negative">
+                    <div class="metric-label">Ending Balance (Sep)</div>
+                    <div class="metric-value">$19,612</div>
+                </div>
+                <div class="metric negative">
+                    <div class="metric-label">Net Change</div>
+                    <div class="metric-value">-$2,225 <span class="trend-arrow">📉</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4-Year Comparison Charts -->
+        <h2>4-Year Historical Trends</h2>
+
+        <div class="chart-container">
+            <h3 style="margin-bottom: 16px;">Year-End Treasury Balance Progression</h3>
+            <div class="chart-inner">
+                <canvas id="balanceChart"></canvas>
+            </div>
+            <div class="insights">
+                <strong>Observation:</strong> Strong growth 2022-2025 (+112% cumulative), but 2026 shows declining trend as major events draw down reserves. Kingdom peak was Dec 2025 at $21,837. Current position shows 10% decline from peak.
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <h3 style="margin-bottom: 16px;">Annual Revenue vs. Expenses Comparison</h3>
+            <div class="chart-inner">
+                <canvas id="revenueExpenseChart"></canvas>
+            </div>
+            <div class="insights">
+                <strong>Key Insight:</strong> 2024-2025 showed strong revenue growth ($6,977 and $25,738 respectively). 2026 shows revenue collapse (only $4,470 in 9 months) while expenses remain high ($8,082). This reversal is unsustainable.
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <h3 style="margin-bottom: 16px;">Revenue Trend & Expense Trend (4-Year View)</h3>
+            <div class="chart-inner tall">
+                <canvas id="trendLineChart"></canvas>
+            </div>
+            <div class="insights">
+                <strong>Critical Trend:</strong> The two lines converged significantly in 2026. Revenue declining while expenses remain elevated signals cash burn acceleration. Without major course correction, operational reserves will be exhausted within 12 months.
+            </div>
+        </div>
+
+        <!-- Detailed Comparison Tables -->
+        <h2>Detailed Financial Metrics</h2>
+
+        <div class="chart-container">
+            <h3>Annual Summary Statistics</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Year</th>
+                        <th class="amount">Beginning Balance</th>
+                        <th class="amount">Total Deposits</th>
+                        <th class="amount">Total Expenses</th>
+                        <th class="amount">Ending Balance</th>
+                        <th class="amount">Net Change</th>
+                        <th class="amount">YoY Growth %</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>2022</strong></td>
+                        <td class="amount">$9,191</td>
+                        <td class="amount">$1,144</td>
+                        <td class="amount">$0</td>
+                        <td class="amount">$10,335</td>
+                        <td class="amount">+$1,144</td>
+                        <td class="amount">+12.4%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>2023</strong></td>
+                        <td class="amount">$10,335</td>
+                        <td class="amount">$3,143</td>
+                        <td class="amount">$0</td>
+                        <td class="amount">$12,268</td>
+                        <td class="amount">+$1,933</td>
+                        <td class="amount">+18.7%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>2024</strong></td>
+                        <td class="amount">$10,409</td>
+                        <td class="amount">$6,977</td>
+                        <td class="amount">$1,053</td>
+                        <td class="amount">$16,344</td>
+                        <td class="amount">+$5,935</td>
+                        <td class="amount">+56.0%</td>
+                    </tr>
+                    <tr style="background: linear-gradient(90deg, rgba(56, 142, 60, 0.1) 0%, transparent 100%);">
+                        <td><strong>2025</strong></td>
+                        <td class="amount">$16,344</td>
+                        <td class="amount">$25,738</td>
+                        <td class="amount">$20,245</td>
+                        <td class="amount">$21,837</td>
+                        <td class="amount">+$5,493</td>
+                        <td class="amount">+33.6%</td>
+                    </tr>
+                    <tr style="background: linear-gradient(90deg, rgba(211, 47, 47, 0.1) 0%, transparent 100%);">
+                        <td><strong>2026 (YTD)</strong></td>
+                        <td class="amount">$21,837</td>
+                        <td class="amount">$4,470</td>
+                        <td class="amount">$8,082</td>
+                        <td class="amount">$19,612</td>
+                        <td class="amount">-$2,225</td>
+                        <td class="amount">-10.2%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Key Findings -->
+        <h2>Key Findings & Patterns</h2>
+        <div class="key-findings">
+            <ul class="findings-list">
+                <li class="finding-item positive">
+                    <div class="finding-year">2022-2023</div>
+                    <div class="finding-text"><strong>Foundation Building</strong><br>Early stage with minimal activity. Accumulated base of ~$10-12K with virtually no expenses.</div>
+                </li>
+                <li class="finding-item positive">
+                    <div class="finding-year">2024</div>
+                    <div class="finding-text"><strong>Growth Phase</strong><br>First major activity year. Revenue grew 5.6x ($1,144 → $6,977). Balance grew from $10.4K to $16.3K (+56%).</div>
+                </li>
+                <li class="finding-item positive">
+                    <div class="finding-year">2025</div>
+                    <div class="finding-text"><strong>Peak Performance</strong><br>Best year yet. Revenue peaked at $25,738. Despite high expenses ($20,245), balance grew to $21,837 (+34%). Operations scaled successfully.</div>
+                </li>
+                <li class="finding-item critical">
+                    <div class="finding-year">2026</div>
+                    <div class="finding-text"><strong>Crisis Year</strong><br>Revenue collapsed 82% ($25,738 → $4,470). Expenses remain at unsustainable levels ($8,082). Balance declining (-10.2%). This trajectory leads to insolvency.</div>
+                </li>
+                <li class="finding-item critical">
+                    <div class="finding-year">2022-2026 Trend</div>
+                    <div class="finding-text"><strong>Encumbrance Problem</strong><br>As major encumbered events were booked (Crown Crucible, Nov event, Feb event), they transformed the kingdom from growth to debt. Treasury went from accumulation to depletion mode.</div>
+                </li>
+                <li class="finding-item critical">
+                    <div class="finding-year">Future Outlook</div>
+                    <div class="finding-text"><strong>Unsustainable Trajectory</strong><br>If 2026 trend continues (high expenses, low revenue), operational reserves will be exhausted by Q2 2027. Kingdom cannot sustain current encumbered event schedule without major operational changes.</div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Year-to-Year Efficiency Metrics -->
+        <h2>Efficiency Analysis</h2>
+        <div class="comparison-grid">
+            <div class="stat-block">
+                <h3>Revenue per Dollar of Expenses</h3>
+                <ul class="stat-rows">
+                    <li class="stat-row">
+                        <span class="stat-row-label">2022</span>
+                        <span class="stat-row-value">∞ (no expenses)</span>
+                    </li>
+                    <li class="stat-row">
+                        <span class="stat-row-label">2023</span>
+                        <span class="stat-row-value">∞ (no expenses)</span>
+                    </li>
+                    <li class="stat-row">
+                        <span class="stat-row-label">2024</span>
+                        <span class="stat-row-value">6.6:1</span>
+                    </li>
+                    <li class="stat-row">
+                        <span class="stat-row-label">2025</span>
+                        <span class="stat-row-value">1.3:1</span>
+                    </li>
+                    <li class="stat-row">
+                        <span class="stat-row-label">2026 (YTD)</span>
+                        <span class="stat-row-value">0.6:1 ⚠️</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="stat-block">
+                <h3>Reserve Ratio (Operations Fund % of Total)</h3>
+                <ul class="stat-rows">
+                    <li class="stat-row">
+                        <span class="stat-row-label">2022</span>
+                        <span class="stat-row-value">100%</span>
+                    </li>
+                    <li class="stat-row">
+                        <span class="stat-row-label">2023</span>
+                        <span class="stat-row-value">100%</span>
+                    </li>
+                    <li class="stat-row">
+                        <span class="stat-row-label">2024</span>
+                        <span class="stat-row-value">62%</span>
+                    </li>
+                    <li class="stat-row">
+                        <span class="stat-row-label">2025</span>
+                        <span class="stat-row-value">77%</span>
+                    </li>
+                    <li class="stat-row">
+                        <span class="stat-row-label">2026 (Sep)</span>
+                        <span class="stat-row-value">16.5% 🔴</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="stat-block">
+                <h3>Year-over-Year Balance Growth</h3>
+                <ul class="stat-rows">
+                    <li class="stat-row">
+                        <span class="stat-row-label">2022 → 2023</span>
+                        <span class="stat-row-value">+18.7%</span>
+                    </li>
+                    <li class="stat-row">
+                        <span class="stat-row-label">2023 → 2024</span>
+                        <span class="stat-row-value">+56.0%</span>
+                    </li>
+                    <li class="stat-row">
+                        <span class="stat-row-label">2024 → 2025</span>
+                        <span class="stat-row-value">+33.6%</span>
+                    </li>
+                    <li class="stat-row">
+                        <span class="stat-row-label">2025 → 2026</span>
+                        <span class="stat-row-value">-10.2% 📉</span>
+                    </li>
+                    <li class="stat-row">
+                        <span class="stat-row-label">4-Year Total</span>
+                        <span class="stat-row-value">+89.8%</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Cumulative Summary -->
+        <div class="chart-container">
+            <h3>4-Year Cumulative Summary</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th class="amount">Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Starting Balance (May 2022)</strong></td>
+                        <td class="amount">$9,191</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Current Balance (Sep 2026)</strong></td>
+                        <td class="amount">$19,612</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Total Cumulative Deposits (4-year)</strong></td>
+                        <td class="amount">$41,472</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Total Cumulative Expenses (4-year)</strong></td>
+                        <td class="amount">$29,563</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Net Growth (4-year)</strong></td>
+                        <td class="amount">+$10,421</td>
+                    </tr>
+                    <tr style="font-weight: bold; background: var(--surface);">
+                        <td>4-Year Growth %</td>
+                        <td class="amount">+113%</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="insights" style="margin-top: 16px;">
+                <strong>Paradox:</strong> While the kingdom has grown 113% over 4 years, the present situation is worse than the historical numbers suggest. The growth is illusory—it's mostly encumbered funds for future events. The actual operational capacity has shrunk from 100% (2022) to 16.5% (2026). This is not growth; it's over-leveraging disguised as growth.
+            </div>
+        </div>
+
+        <footer>
+            <p>NeverWinter BoD Financial Analysis | October 2026</p>
+            <p>Data covers May 2022 - September 2026 (4+ years of treasury records)</p>
+        </footer>
+    </div>
+
+    <script>
+        // Balance Chart
+        const balanceCtx = document.getElementById('balanceChart');
+        new Chart(balanceCtx, {
+            type: 'line',
+            data: {
+                labels: ['May 2022', 'Aug 2022', 'Feb 2023', 'Sep 2023', 'Dec 2023', 'Aug 2024', 'Dec 2024', 'Dec 2025', 'Jun 2026', 'Sep 2026'],
+                datasets: [{
+                    label: 'Year-End Balance',
+                    data: [9191, 10335, 10335, 13390, 12268, 16344, 16344, 21837, 18791, 19612],
+                    borderColor: '#1976d2',
+                    backgroundColor: 'rgba(25, 118, 210, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 6,
+                    pointBackgroundColor: '#1976d2',
+                    pointBorderWidth: 0,
+                    pointHoverRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        labels: { usePointStyle: true, padding: 15 }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + value.toLocaleString();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Revenue vs Expense Chart
+        const revExpCtx = document.getElementById('revenueExpenseChart');
+        new Chart(revExpCtx, {
+            type: 'bar',
+            data: {
+                labels: ['2022', '2023', '2024', '2025', '2026 (YTD)'],
+                datasets: [
+                    {
+                        label: 'Total Deposits',
+                        data: [1144, 3143, 6977, 25738, 4470],
+                        backgroundColor: 'rgba(56, 142, 60, 0.7)',
+                        borderColor: '#388e3c',
+                        borderWidth: 2,
+                        borderRadius: 4
+                    },
+                    {
+                        label: 'Total Expenses',
+                        data: [0, 0, 1053, 20245, 8082],
+                        backgroundColor: 'rgba(211, 47, 47, 0.7)',
+                        borderColor: '#d32f2f',
+                        borderWidth: 2,
+                        borderRadius: 4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        labels: { usePointStyle: true, padding: 15 }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + value.toLocaleString();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Trend Line Chart
+        const trendCtx = document.getElementById('trendLineChart');
+        new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: ['2022', '2023', '2024', '2025', '2026 (YTD)'],
+                datasets: [
+                    {
+                        label: 'Annual Deposits (Revenue)',
+                        data: [1144, 3143, 6977, 25738, 4470],
+                        borderColor: '#388e3c',
+                        backgroundColor: 'rgba(56, 142, 60, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 7,
+                        pointBackgroundColor: '#388e3c',
+                        pointBorderWidth: 0
+                    },
+                    {
+                        label: 'Annual Expenses',
+                        data: [0, 0, 1053, 20245, 8082],
+                        borderColor: '#d32f2f',
+                        backgroundColor: 'rgba(211, 47, 47, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 7,
+                        pointBackgroundColor: '#d32f2f',
+                        pointBorderWidth: 0
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        labels: { usePointStyle: true, padding: 15, font: { size: 13 } }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + value.toLocaleString();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
