@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeverWinter November 2026 Revenue Report</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 36px;
+            color: #ff6b6b;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #ffa502;
+            margin-bottom: 10px;
+        }
+
+        .as-of {
+            font-size: 14px;
+            color: #888;
+        }
+
+        .critical-box {
+            background: rgba(255, 107, 107, 0.15);
+            border: 2px solid #ff6b6b;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 30px;
+        }
+
+        .critical-box h2 {
+            color: #ff6b6b;
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+
+        .critical-box p {
+            font-size: 16px;
+            line-height: 1.8;
+            margin-bottom: 12px;
+        }
+
+        .critical-box .highlight {
+            background: rgba(255, 107, 107, 0.2);
+            padding: 12px 16px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #ff6b6b;
+            margin-top: 12px;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+            backdrop-filter: blur(10px);
+        }
+
+        .section h2 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #52a8ec;
+            border-bottom: 2px solid rgba(82, 168, 236, 0.3);
+            padding-bottom: 12px;
+        }
+
+        .metric {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 4px;
+            align-items: center;
+        }
+
+        .metric-label {
+            font-size: 14px;
+            color: #aaa;
+        }
+
+        .metric-value {
+            font-size: 18px;
+            font-weight: 700;
+            text-align: right;
+        }
+
+        .target {
+            color: #ffa502;
+        }
+
+        .critical {
+            color: #ff6b6b;
+        }
+
+        .safe {
+            color: #51cf66;
+        }
+
+        .scenario {
+            background: rgba(255, 255, 255, 0.02);
+            border-left: 4px solid #ffa502;
+            padding: 16px;
+            margin-bottom: 12px;
+            border-radius: 4px;
+        }
+
+        .scenario-title {
+            font-weight: 600;
+            color: #ffa502;
+            margin-bottom: 8px;
+        }
+
+        .scenario-text {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #ccc;
+        }
+
+        .action-list {
+            list-style: none;
+        }
+
+        .action-list li {
+            padding: 12px 0;
+            padding-left: 28px;
+            position: relative;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #ccc;
+        }
+
+        .action-list li:before {
+            content: "→";
+            position: absolute;
+            left: 8px;
+            color: #52a8ec;
+            font-weight: 700;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #666;
+            font-size: 12px;
+        }
+
+        @media (prefers-color-scheme: light) {
+            body {
+                background: #f5f5f5;
+                color: #333;
+            }
+            .section {
+                background: #fff;
+                border-color: #ddd;
+            }
+            .critical-box {
+                background: rgba(255, 107, 107, 0.08);
+                border-color: #d63031;
+            }
+            h1 {
+                color: #d63031;
+            }
+            .section h2 {
+                color: #0066cc;
+                border-bottom-color: rgba(0, 102, 204, 0.2);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>November 2026 Revenue Report</h1>
+            <p class="subtitle">What Must Happen to Keep the Kingdom Solvent</p>
+            <p class="as-of">Report Date: October 30, 2026</p>
+        </header>
+
+        <div class="critical-box">
+            <h2>🚨 The Situation</h2>
+            <p>
+                As of October 26, the kingdom has <strong>$2,930.97 in unencumbered (operational) funds</strong>. 
+                At the current monthly burn rate of ~$213, this provides only <strong>13.8 months of operational runway</strong>.
+            </p>
+            <p>
+                However, the November event is committed to draw <strong>$6,200 in encumbered funds</strong>. If the event 
+                costs more than it generates in ticket sales, the kingdom will draw down unencumbered reserves to cover the shortfall.
+            </p>
+            <div class="highlight">
+                November is the deciding month. If the event generates strong revenue, the kingdom survives to 2027. 
+                If it underperforms, December goes negative.
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Current Position (October 26, 2026)</h2>
+            
+            <div class="metric">
+                <span class="metric-label">Unencumbered Cash</span>
+                <span class="metric-value critical">$2,930.97</span>
+            </div>
+
+            <div class="metric">
+                <span class="metric-label">Monthly Operational Burn</span>
+                <span class="metric-value target">$213.00</span>
+            </div>
+
+            <div class="metric">
+                <span class="metric-label">Encumbered for November Event</span>
+                <span class="metric-value target">$6,200.00</span>
+            </div>
+
+            <div class="metric">
+                <span class="metric-label">Current Ticket Pre-Sales (October)</span>
+                <span class="metric-value critical">$631.78</span>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>November Revenue Target</h2>
+
+            <p style="margin-bottom: 16px; font-size: 15px; line-height: 1.8;">
+                To stay solvent through December and avoid a crisis in January, November must generate at least 
+                <strong style="color: #ffa502; font-size: 18px;">$1,500 in total revenue</strong> (pre-registrations + gate sales).
+            </p>
+
+            <div class="metric">
+                <span class="metric-label">Minimum Revenue Target</span>
+                <span class="metric-value target">$1,500.00</span>
+            </div>
+
+            <div class="metric">
+                <span class="metric-label">Estimated Event Costs</span>
+                <span class="metric-value">$800.00</span>
+            </div>
+
+            <div class="metric">
+                <span class="metric-label">Expected Net from November</span>
+                <span class="metric-value safe">+$700.00</span>
+            </div>
+
+            <div class="metric">
+                <span class="metric-label">Unencumbered Balance After November</span>
+                <span class="metric-value safe">~$3,600.00</span>
+            </div>
+
+            <p style="margin-top: 16px; font-size: 14px; color: #aaa;">
+                This assumes the event generates $1,500 in revenue. Current pre-registrations are only $631.78. 
+                Gate sales must add $868+ to reach the target.
+            </p>
+        </div>
+
+        <div class="section">
+            <h2>What If November Misses the Target?</h2>
+
+            <div class="scenario">
+                <div class="scenario-title">Scenario 1: November Generates Only $800 (Current Pace)</div>
+                <div class="scenario-text">
+                    If gate sales match pre-registration levels, the event generates no net. The kingdom spends $800 from 
+                    unencumbered reserves, leaving only $2,130.97 going into December. This triggers the crisis: operations 
+                    continue to burn $213/month, and by mid-January the kingdom hits $0 unencumbered cash.
+                </div>
+            </div>
+
+            <div class="scenario">
+                <div class="scenario-title">Scenario 2: November Generates Only $631 (Worst Case)</div>
+                <div class="scenario-text">
+                    If the event loses money (event costs exceed revenue), the kingdom must draw $6,200 from reserves to pay 
+                    for the committed event. This immediately takes unencumbered balance to NEGATIVE $3,269. The kingdom is 
+                    insolvent before the February event even happens.
+                </div>
+            </div>
+
+            <div class="scenario">
+                <div class="scenario-title">Scenario 3: November Generates $2,000+ (Recovery)</div>
+                <div class="scenario-text">
+                    If the event generates strong sales (3x current pre-registration rate), the kingdom builds back to $5,500+ 
+                    unencumbered. This provides runway through February and into Q1 2027, buying time to recover event attendance.
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Critical Action Items for November</h2>
+
+            <ul class="action-list">
+                <li><strong>Marketing Push:</strong> Advertise November event aggressively. Current pre-sales ($631.78) suggest 
+                    weak awareness. Need gate sales 3-4x higher than pre-registrations.</li>
+                <li><strong>Ticket Price Analysis:</strong> Are current ticket prices optimal? Lower prices drive volume; higher 
+                    prices maximize per-ticket revenue. Test the math.</li>
+                <li><strong>Gate Day Logistics:</strong> Plan to capture walk-in/last-minute registrations. Most revenue typically 
+                    comes at the gate, not pre-sales.</li>
+                <li><strong>Backup Plan:</strong> If November looks weak by mid-month, decide now whether to scale event costs 
+                    down or cancel/reschedule February event to reduce risk.</li>
+                <li><strong>Finance Communication:</strong> Track actual November revenue daily. Don't wait until November 30 to 
+                    discover shortfall. Adjust operations in real-time if needed.</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>December & Beyond</h2>
+
+            <p style="margin-bottom: 16px; font-size: 14px; line-height: 1.8;">
+                <strong>If November hits $1,500+:</strong> December is safe. Continue planning the February event with confidence that there's unencumbered buffer.
+            </p>
+
+            <p style="margin-bottom: 16px; font-size: 14px; line-height: 1.8;">
+                <strong>If November misses $1,500:</strong> December becomes critical. Operational costs must be cut, February event must be scaled back, or external funding sought immediately.
+            </p>
+
+            <p style="font-size: 14px; line-height: 1.8;">
+                <strong>The February event ($6,200 encumbered)</strong> depends entirely on November's outcome. If November leaves 
+                the kingdom at minimal unencumbered balance, February event may not be affordable.
+            </p>
+        </div>
+
+        <div class="section">
+            <h2>Bottom Line</h2>
+
+            <p style="font-size: 16px; line-height: 1.8; color: #ccc;">
+                <strong style="color: #ffa502;">November must generate $1,500 minimum</strong> to keep the kingdom on a sustainable path through Q1 2027. 
+                This requires gate sales to reach 3-4x current pre-registration levels. The Board needs a marketing plan and real-time tracking 
+                to make this happen. Waiting until November 30 to assess performance is too late—course corrections must start now.
+            </p>
+        </div>
+
+        <div class="footer">
+            <p>NeverWinter BoD November Revenue Report | October 30, 2026</p>
+            <p>For Board Members & Leadership | Based on October 26, 2026 Treasury Report</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeverWinter BoD Financial Crisis Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 42px;
+            color: #ff6b6b;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(255, 107, 107, 0.3);
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #ffa502;
+            margin-bottom: 20px;
+        }
+
+        .as-of {
+            font-size: 14px;
+            color: #888;
+        }
+
+        .status-alert {
+            background: rgba(255, 107, 107, 0.1);
+            border-left: 4px solid #ff6b6b;
+            padding: 16px;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .status-alert strong {
+            color: #ff6b6b;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+        }
+
+        .card-title {
+            font-size: 14px;
+            color: #aaa;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .card-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .card-subtext {
+            font-size: 14px;
+            color: #888;
+        }
+
+        .critical {
+            color: #ff6b6b;
+        }
+
+        .warning {
+            color: #ffa502;
+        }
+
+        .healthy {
+            color: #51cf66;
+        }
+
+        .chart-container {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 40px;
+            backdrop-filter: blur(10px);
+        }
+
+        .chart-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: #e0e0e0;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            color: #e0e0e0;
+            border-bottom: 2px solid rgba(255, 107, 107, 0.3);
+            padding-bottom: 12px;
+        }
+
+        .encumbered-breakdown {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 40px;
+        }
+
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .breakdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .breakdown-label {
+            font-size: 15px;
+        }
+
+        .breakdown-amount {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffa502;
+        }
+
+        .scenario-buttons {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            background: rgba(255, 107, 107, 0.1);
+            color: #ff6b6b;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: rgba(255, 107, 107, 0.2);
+            border-color: #ff6b6b;
+        }
+
+        .btn.active {
+            background: #ff6b6b;
+            color: #1a1a2e;
+        }
+
+        .scenario-result {
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 4px solid #ffa502;
+            padding: 16px;
+            border-radius: 4px;
+            margin-top: 16px;
+        }
+
+        .runway-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 40px;
+        }
+
+        .runway-item {
+            margin-bottom: 20px;
+        }
+
+        .runway-label {
+            font-size: 14px;
+            color: #aaa;
+            margin-bottom: 8px;
+        }
+
+        .runway-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .runway-subtext {
+            font-size: 13px;
+            color: #888;
+        }
+
+        .recommendations {
+            background: rgba(82, 168, 236, 0.1);
+            border-left: 4px solid #52a8ec;
+            padding: 20px;
+            border-radius: 4px;
+            margin-bottom: 40px;
+        }
+
+        .recommendations h3 {
+            color: #52a8ec;
+            margin-bottom: 12px;
+        }
+
+        .rec-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .rec-list li {
+            padding: 8px 0;
+            padding-left: 24px;
+            position: relative;
+        }
+
+        .rec-list li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #52a8ec;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #666;
+            font-size: 13px;
+        }
+
+        @media (prefers-color-scheme: light) {
+            body {
+                background: #f5f5f5;
+                color: #333;
+            }
+            .card {
+                background: #fff;
+                border-color: #ddd;
+            }
+            .chart-container {
+                background: #fff;
+                border-color: #ddd;
+            }
+            .encumbered-breakdown {
+                background: #fff;
+                border-color: #ddd;
+            }
+            .runway-section {
+                background: #fff;
+                border-color: #ddd;
+            }
+            h1 {
+                color: #d63031;
+            }
+            .card-title {
+                color: #666;
+            }
+            .card-value {
+                color: #333;
+            }
+            .chart-title {
+                color: #333;
+            }
+            .section-title {
+                color: #333;
+                border-bottom-color: rgba(214, 48, 49, 0.2);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚠️ NeverWinter Financial Crisis Dashboard</h1>
+            <p class="subtitle">Current Status & Operational Runway Analysis</p>
+            <p class="as-of">Data as of October 26, 2026</p>
+        </header>
+
+        <div class="status-alert">
+            <strong>CRITICAL:</strong> Unencumbered operational funds have declined 8.7% in one month (Sept: 16.4% → Oct: 14.6% of total cash). 
+            At current revenue levels, the kingdom will hit zero unencumbered balance by December 2026. November and February events 
+            are the deciding factor for Q1 2027 solvency.
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <div class="card-title">Total Cash</div>
+                <div class="card-value">$20,030.97</div>
+                <div class="card-subtext">+2.1% from September</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Encumbered Funds</div>
+                <div class="card-value critical">$17,100.00</div>
+                <div class="card-subtext">85.4% of total cash</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Unencumbered (Operations)</div>
+                <div class="card-value critical">$2,930.97</div>
+                <div class="card-subtext">14.6% of total cash (CRITICAL)</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Monthly Operational Burn</div>
+                <div class="card-value warning">$213</div>
+                <div class="card-subtext">Based on October expenses</div>
+            </div>
+        </div>
+
+        <div class="encumbered-breakdown">
+            <h2 class="chart-title">Encumbered Funds Breakdown (What's Committed)</h2>
+            <div class="breakdown-item">
+                <span class="breakdown-label">Crown Crucible Event</span>
+                <span class="breakdown-amount">$4,000.00</span>
+            </div>
+            <div class="breakdown-item">
+                <span class="breakdown-label">November Event</span>
+                <span class="breakdown-amount">$6,200.00</span>
+            </div>
+            <div class="breakdown-item">
+                <span class="breakdown-label">February Event</span>
+                <span class="breakdown-amount">$6,200.00</span>
+            </div>
+            <div class="breakdown-item">
+                <span class="breakdown-label">Insurance</span>
+                <span class="breakdown-amount">$700.00</span>
+            </div>
+            <div class="breakdown-item" style="font-weight: 700; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 12px; margin-top: 12px;">
+                <span class="breakdown-label">Total Encumbered</span>
+                <span class="breakdown-amount critical">$17,100.00</span>
+            </div>
+        </div>
+
+        <h2 class="section-title">Operational Runway Analysis</h2>
+
+        <div class="runway-section">
+            <div class="runway-item">
+                <div class="runway-label">Current Unencumbered Balance</div>
+                <div class="runway-value critical">$2,930.97</div>
+                <div class="runway-subtext">Available for operations & unexpected costs</div>
+            </div>
+
+            <div class="runway-item">
+                <div class="runway-label">Monthly Operational Costs</div>
+                <div class="runway-value warning">~$213</div>
+                <div class="runway-subtext">Storage, subscriptions, supplies (October baseline)</div>
+            </div>
+
+            <div class="runway-item">
+                <div class="runway-label">Theoretical Runway (No Events)</div>
+                <div class="runway-value">13.8 months</div>
+                <div class="runway-subtext">If no new encumbrances and $0 event expenses</div>
+            </div>
+
+            <div class="runway-item">
+                <div class="runway-label">Realistic Runway (With Events)</div>
+                <div class="runway-value critical">6-8 months</div>
+                <div class="runway-subtext">Accounting for November/February event draws and expenses</div>
+            </div>
+
+            <div class="runway-item">
+                <div class="runway-label">Critical Threshold</div>
+                <div class="runway-value critical">DECEMBER 2026</div>
+                <div class="runway-subtext">Projected date to hit $0 unencumbered if current trend continues</div>
+            </div>
+        </div>
+
+        <h2 class="section-title">Event Revenue Comparison</h2>
+
+        <div class="chart-container">
+            <canvas id="revenueChart"></canvas>
+        </div>
+
+        <h2 class="section-title">Unencumbered Fund Erosion Trend</h2>
+
+        <div class="chart-container">
+            <canvas id="unencumberedChart"></canvas>
+        </div>
+
+        <h2 class="section-title">What If: Impact of Event Price Changes</h2>
+
+        <div class="scenario-buttons">
+            <button class="btn active" onclick="showScenario('baseline')">Baseline (Current)</button>
+            <button class="btn" onclick="showScenario('decline15')">-15% Revenue</button>
+            <button class="btn" onclick="showScenario('decline30')">-30% Revenue</button>
+        </div>
+
+        <div id="scenarioResult" class="scenario-result">
+            <strong>Baseline Scenario:</strong> October deposits ($631.78) represent only 23% of the 2025 monthly average ($2,710). 
+            Kingdom needs 4.3x current revenue to return to sustainable 2025 levels. November event must generate strong gate sales 
+            or the kingdom enters negative unencumbered balance by December.
+        </div>
+
+        <h2 class="section-title">Key Findings</h2>
+
+        <div class="recommendations">
+            <h3>🚨 Critical Issues</h3>
+            <ul class="rec-list">
+                <li><strong>Revenue Cliff:</strong> October deposits 77% below 2025 baseline — structural decline, not seasonal</li>
+                <li><strong>Operational Buffer Eroding:</strong> Unencumbered funds down 8.7% in one month</li>
+                <li><strong>Event Dependency:</strong> Kingdom now entirely dependent on ticket sales for survival</li>
+                <li><strong>New Encumbrances:</strong> $700 insurance added in October; more may follow</li>
+                <li><strong>Decision Window Closing:</strong> 6–8 months until operational crisis</li>
+            </ul>
+        </div>
+
+        <div class="recommendations">
+            <h3>✓ What Must Happen</h3>
+            <ul class="rec-list">
+                <li><strong>November Revenue Target:</strong> Minimum $1,500 to avoid negative unencumbered by December</li>
+                <li><strong>Revenue Recovery Plan:</strong> Increase monthly deposits 4–5x to 2025 sustainable levels</li>
+                <li><strong>Event Budget Review:</strong> Evaluate whether $6,200 encumbrances are realistic given current ticket sales</li>
+                <li><strong>Cost Reduction:</strong> Identify operational costs that can be cut (current $213/month is baseline)</li>
+                <li><strong>Bank Reconciliation:</strong> Obtain missing bank statements to verify all figures</li>
+            </ul>
+        </div>
+
+        <div class="recommendations">
+            <h3>⚠️ Do NOT</h3>
+            <ul class="rec-list">
+                <li>Add new encumbered commitments without first securing corresponding revenue</li>
+                <li>Count on event revenue recovery without a concrete marketing/sales plan</li>
+                <li>Delay the decision on event budgets — November/February are make-or-break</li>
+                <li>Assume the +$418.96 monthly gain is sustainable without increased ticket sales</li>
+            </ul>
+        </div>
+
+        <div class="footer">
+            <p>NeverWinter BoD Financial Crisis Dashboard | Data from May 2022 – October 26, 2026</p>
+            <p>For Board Members & Kingdom Leadership | Bank statements not yet reconciled</p>
+        </div>
+    </div>
+
+    <script>
+        // Event Revenue Comparison Chart
+        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+        new Chart(revenueCtx, {
+            type: 'bar',
+            data: {
+                labels: ['2025 Avg\n(Monthly)', '2026 YTD\nAvg', 'October\n2026'],
+                datasets: [{
+                    label: 'Monthly Revenue',
+                    data: [2710, 1930, 631.78],
+                    backgroundColor: ['#51cf66', '#ffa502', '#ff6b6b'],
+                    borderColor: ['#51cf66', '#ffa502', '#ff6b6b'],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        labels: { color: '#e0e0e0', font: { size: 13 } }
+                    }
+                },
+                scales: {
+                    y: {
+                        ticks: { color: '#888', callback: v => '$' + v },
+                        grid: { color: 'rgba(255,255,255,0.05)' },
+                        beginAtZero: true
+                    },
+                    x: {
+                        ticks: { color: '#888' },
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+
+        // Unencumbered Fund Erosion Trend
+        const unencumberedCtx = document.getElementById('unencumberedChart').getContext('2d');
+        new Chart(unencumberedCtx, {
+            type: 'line',
+            data: {
+                labels: ['September 24', 'October 26'],
+                datasets: [{
+                    label: 'Unencumbered Funds ($)',
+                    data: [3212.01, 2930.97],
+                    borderColor: '#ff6b6b',
+                    backgroundColor: 'rgba(255, 107, 107, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    pointRadius: 6,
+                    pointBackgroundColor: '#ff6b6b',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        labels: { color: '#e0e0e0', font: { size: 13 } }
+                    }
+                },
+                scales: {
+                    y: {
+                        ticks: { color: '#888', callback: v => '$' + v },
+                        grid: { color: 'rgba(255,255,255,0.05)' },
+                        min: 2500,
+                        max: 3500
+                    },
+                    x: {
+                        ticks: { color: '#888' },
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+
+        function showScenario(scenario) {
+            const resultDiv = document.getElementById('scenarioResult');
+            let text = '';
+
+            if (scenario === 'baseline') {
+                text = '<strong>Baseline Scenario (Current Path):</strong> October deposits ($631.78) represent only 23% of the 2025 monthly average ($2,710). Kingdom needs 4.3x current revenue to return to sustainable 2025 levels. <strong>November event must generate strong gate sales or the kingdom enters negative unencumbered balance by December.</strong>';
+            } else if (scenario === 'decline15') {
+                text = '<strong>-15% Revenue Scenario:</strong> If event ticket sales decline another 15% from October baseline, monthly deposits fall to ~$537. At this rate, unencumbered funds hit $0 by mid-November. <strong>Critical: Events cannot sustain at lower ticket sales.</strong>';
+            } else if (scenario === 'decline30') {
+                text = '<strong>-30% Revenue Scenario:</strong> If event ticket sales decline 30% from October, monthly deposits fall to ~$442. <strong>Kingdom runs out of unencumbered cash before November event ends.</strong> This scenario requires immediate cost cuts or event cancellation.';
+            }
+
+            resultDiv.innerHTML = text;
+
+            // Update button states
+            document.querySelectorAll('.scenario-buttons .btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>
